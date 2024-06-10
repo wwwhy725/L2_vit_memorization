@@ -8,13 +8,14 @@ class Args:
     This should show up in the helptext!"""
 
     """string"""
-    train_feature_folder: str = 'feature'
+    feature_folder: str = 'feature'
     train_feature_filename: str = 'train_feature_cifar_10k.npy'
+    gen_feature_filename: str = 'gen_feature_cifar_1024.npy'
 
     generate_image_path: str = 'img/gen_cifar.npy'
     trainset_path: str = 'img/cifar_subset_10k.npy'
 
-    visualize_memo_path: str = 'vit_memo/visualize/cifar_10k.png'
+    visualize_memo_path: str = 'visualize/cifar_10k.png'
 
     pretrain_vit_id: str = 'google/vit-base-patch16-224-in21k'
     

@@ -102,21 +102,24 @@ def visualize_memo(gen:torch.Tensor, train:torch.Tensor, index:torch.Tensor):
     plt.savefig(args.visualize_memo_path, dpi=600)
     plt.close()
 
-def memo_dist(gen:torch.Tensor, train:torch.Tensor, train_feature_folder:str, alpha:float=0.5, beta:float=0.5, threshold:float=0.2):
+def memo_dist(gen:torch.Tensor, train:torch.Tensor, feature_folder:str, alpha:float=0.5, beta:float=0.5, threshold:float=0.2):
     """input size [b, c, h, w], pixel values in [-1, 1]"""
 
     assert gen.min() < 0 and train.min() < 0, "images should be in [-1, 1]!"
 
+    os.makedirs(feature_folder, exist_ok=True)
+
     # vit features
     try:
+        gen_feature_path = os.path.join(feature_folder, args.gen_feature_filename)
         gen_features = vit_features(gen).cpu().detach() 
+        np.save(gen_feature_path, gen_features.numpy())
     except Exception as e:
         print(e)
         print("Potential CUDA OOM: Since we assume the batch of generated images is small, \
               we do not implement batched version of generated feature extractor here!")
     
-    train_feature_path = os.path.join(train_feature_folder, args.train_feature_filename)
-    os.makedirs(train_feature_folder, exist_ok=True)
+    train_feature_path = os.path.join(feature_folder, args.train_feature_filename)
     if os.path.exists(train_feature_path):
         if not train_feature_path.endswith('.npy'):
             raise ValueError("The file is not in .npy format.")
@@ -166,7 +169,7 @@ def main():
     train = np.load(args.trainset_path)
     train = torch.tensor(train)
 
-    memo_dist(gen, train, train_feature_folder=args.train_feature_folder, alpha=args.alpha, beta=args.beta, threshold=args.threshold)
+    memo_dist(gen, train, feature_folder=args.feature_folder, alpha=args.alpha, beta=args.beta, threshold=args.threshold)
 
 if __name__ == "__main__":
     main()
